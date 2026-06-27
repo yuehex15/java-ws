@@ -1,966 +1,713 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeFlow | Visual Development Platform</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>✨ 随机网站 · 生成式设计</title>
     <style>
+        /* ===== 全局重置 & CSS变量（由JS动态覆盖） ===== */
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --border: #e2e8f0;
+            --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+            --radius: 20px;
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
             line-height: 1.6;
-            color: #333;
-            background-color: #f9fbfd;
+            transition: background var(--transition), color var(--transition);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        
-        h1, h2, h3, h4 {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            line-height: 1.3;
-        }
-        
+
+        /* ===== 容器 ===== */
         .container {
-            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        /* Header & Navigation */
-        header {
-            background-color: #fff;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-            position: fixed;
+            padding: 0 24px;
             width: 100%;
-            z-index: 1000;
+            flex: 1;
         }
-        
+
+        /* ===== 头部 ===== */
+        header {
+            background: var(--surface);
+            border-bottom: 2px solid var(--border);
+            padding: 18px 0;
+            box-shadow: var(--shadow);
+            transition: background var(--transition), border var(--transition);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: background 0.4s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo-icon {
+            font-size: 2rem;
+            -webkit-text-fill-color: initial;
+        }
+
         nav {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
+            gap: 24px;
+            flex-wrap: wrap;
         }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-        
-        .logo-icon {
-            color: #4361ee;
-            font-size: 28px;
-            margin-right: 10px;
-        }
-        
-        .logo-text {
-            font-family: 'Poppins', sans-serif;
-            font-size: 24px;
-            font-weight: 700;
-            color: #333;
-        }
-        
-        .logo-text span {
-            color: #4361ee;
-        }
-        
-        .nav-links {
-            display: flex;
-            list-style: none;
-        }
-        
-        .nav-links li {
-            margin-left: 30px;
-        }
-        
-        .nav-links a {
+        nav a {
+            color: var(--text-secondary);
             text-decoration: none;
-            color: #555;
             font-weight: 500;
-            transition: color 0.3s;
+            font-size: 0.95rem;
+            transition: color 0.3s, transform 0.2s;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 4px;
         }
-        
-        .nav-links a:hover {
-            color: #4361ee;
+        nav a:hover {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            transform: translateY(-1px);
         }
-        
-        .cta-button {
-            background-color: #4361ee;
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-        
-        .cta-button:hover {
-            background-color: #3a56d4;
-            transform: translateY(-2px);
-        }
-        
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #333;
-            cursor: pointer;
-        }
-        
-        /* Hero Section */
-        .hero {
-            padding: 150px 0 100px;
-            background: linear-gradient(135deg, #f0f4ff 0%, #f9fbfd 100%);
-        }
-        
-        .hero-content {
+
+        .header-actions {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            gap: 12px;
         }
-        
-        .hero-text {
-            flex: 1;
-            padding-right: 40px;
-        }
-        
-        .hero-text h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: #222;
-        }
-        
-        .hero-text h1 span {
-            color: #4361ee;
-        }
-        
-        .hero-text p {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 30px;
-            max-width: 600px;
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .secondary-button {
-            background-color: white;
-            color: #4361ee;
-            border: 2px solid #4361ee;
-            padding: 12px 28px;
-            border-radius: 6px;
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 40px;
             font-weight: 600;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s;
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        
-        .secondary-button:hover {
-            background-color: #f0f4ff;
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
         }
-        
-        .hero-image {
+        .btn-outline {
+            background: transparent;
+            color: var(--text-secondary);
+            box-shadow: none;
+            border: 1.5px solid var(--border);
+        }
+        .btn-outline:hover {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* ===== 主内容 ===== */
+        main {
+            padding: 40px 0 60px;
             flex: 1;
+        }
+
+        /* 英雄区 */
+        .hero {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 48px 40px;
+            margin-bottom: 48px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all var(--transition);
             text-align: center;
         }
-        
-        .hero-image img {
-            max-width: 100%;
-            border-radius: 10px;
-            box-shadow: 0 20px 40px rgba(67, 97, 238, 0.15);
+        .hero h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text);
         }
-        
-        /* Features Section */
-        .section-title {
-            text-align: center;
-            margin-bottom: 60px;
+        .hero h1 span {
+            color: var(--primary);
         }
-        
-        .section-title h2 {
-            font-size: 36px;
-            color: #222;
-            margin-bottom: 15px;
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 640px;
+            margin: 0 auto 24px;
         }
-        
-        .section-title p {
-            color: #666;
-            max-width: 700px;
-            margin: 0 auto;
+
+        /* 随机标签 */
+        .random-badge {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 60px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
         }
-        
-        .features {
-            padding: 100px 0;
-            background-color: white;
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-        }
-        
-        .feature-card {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .feature-icon {
-            background-color: #eef2ff;
-            color: #4361ee;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 28px;
-        }
-        
-        .feature-card h3 {
-            font-size: 22px;
-            margin-bottom: 15px;
-        }
-        
-        .feature-card p {
-            color: #666;
-        }
-        
-        /* Benefits Section */
-        .benefits {
-            padding: 100px 0;
-            background-color: #f0f4ff;
-        }
-        
-        .benefits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        
-        .benefit-item {
-            text-align: center;
-            padding: 30px 20px;
-        }
-        
-        .benefit-icon {
-            color: #4361ee;
-            font-size: 40px;
-            margin-bottom: 20px;
-        }
-        
-        .benefit-item h3 {
-            font-size: 22px;
-            margin-bottom: 15px;
-        }
-        
-        .benefit-item p {
-            color: #666;
-        }
-        
-        /* Testimonials */
-        .testimonials {
-            padding: 100px 0;
-            background-color: white;
-        }
-        
-        .testimonial-slider {
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-        }
-        
-        .testimonial {
-            background: #f9fbfd;
-            padding: 40px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        .testimonial-text {
-            font-size: 18px;
-            font-style: italic;
-            margin-bottom: 30px;
-            color: #555;
-        }
-        
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .author-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: #ddd;
-            margin-right: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #4361ee;
-            font-size: 24px;
-        }
-        
-        .author-info h4 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-        
-        .author-info p {
-            color: #777;
-            font-size: 14px;
-        }
-        
-        /* Pricing Section */
-        .pricing {
-            padding: 100px 0;
-            background-color: #f9fbfd;
-        }
-        
-        .pricing-grid {
+
+        /* 网格卡片 */
+        .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
+            margin-bottom: 48px;
         }
-        
-        .pricing-card {
-            background: white;
-            border-radius: 10px;
-            padding: 40px 30px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            transition: transform 0.3s;
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 24px 22px 28px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all var(--transition);
+            display: flex;
+            flex-direction: column;
         }
-        
-        .pricing-card.featured {
-            border-top: 5px solid #4361ee;
-            transform: scale(1.05);
-            position: relative;
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary-light);
         }
-        
-        .featured-badge {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #4361ee;
-            color: white;
-            padding: 5px 20px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
+        .card-img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--text-secondary);
+            transition: background 0.3s;
+            overflow: hidden;
         }
-        
-        .pricing-card:hover {
-            transform: translateY(-10px);
+        .card-img svg {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
-        
-        .pricing-card.featured:hover {
-            transform: scale(1.05) translateY(-10px);
-        }
-        
-        .plan-name {
-            font-size: 24px;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        
-        .plan-price {
-            font-size: 48px;
+        .card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
             font-weight: 700;
-            color: #4361ee;
-            margin-bottom: 20px;
         }
-        
-        .plan-price span {
-            font-size: 16px;
-            color: #777;
-        }
-        
-        .plan-features {
-            list-style: none;
-            margin-bottom: 30px;
-        }
-        
-        .plan-features li {
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-            color: #555;
-        }
-        
-        .plan-features li:last-child {
-            border-bottom: none;
-        }
-        
-        /* CTA Section */
-        .cta-section {
-            padding: 100px 0;
-            background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
-            text-align: center;
-            color: white;
-        }
-        
-        .cta-section h2 {
-            font-size: 36px;
-            margin-bottom: 20px;
-        }
-        
-        .cta-section p {
-            font-size: 18px;
-            max-width: 700px;
-            margin: 0 auto 30px;
-            opacity: 0.9;
-        }
-        
-        .cta-section .cta-button {
-            background-color: white;
-            color: #4361ee;
-            font-size: 16px;
-            padding: 15px 40px;
-        }
-        
-        .cta-section .cta-button:hover {
-            background-color: #f0f4ff;
-        }
-        
-        /* Footer */
-        footer {
-            background-color: #222;
-            color: #ccc;
-            padding: 70px 0 20px;
-        }
-        
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            margin-bottom: 50px;
-        }
-        
-        .footer-column h3 {
-            font-size: 20px;
-            color: white;
-            margin-bottom: 25px;
-        }
-        
-        .footer-links {
-            list-style: none;
-        }
-        
-        .footer-links li {
-            margin-bottom: 12px;
-        }
-        
-        .footer-links a {
-            color: #aaa;
+        .card h3 a {
+            color: var(--text);
             text-decoration: none;
             transition: color 0.3s;
         }
-        
-        .footer-links a:hover {
-            color: #4361ee;
+        .card h3 a:hover {
+            color: var(--primary);
         }
-        
-        .copyright {
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid #444;
-            font-size: 14px;
-            color: #888;
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            flex: 1;
+            margin-bottom: 16px;
         }
-        
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .hero-content {
-                flex-direction: column;
+        .card .meta {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--border);
+            padding-top: 14px;
+            margin-top: auto;
+        }
+        .card .tag {
+            background: var(--primary);
+            color: #fff;
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* 侧边栏 + 主内容两栏布局（随机切换） */
+        .two-col {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        @media (max-width: 800px) {
+            .two-col {
+                grid-template-columns: 1fr;
             }
-            
-            .hero-text {
-                padding-right: 0;
-                margin-bottom: 50px;
+        }
+
+        .sidebar {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: all var(--transition);
+        }
+        .sidebar h4 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+        }
+        .sidebar ul {
+            list-style: none;
+        }
+        .sidebar ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+        }
+        .sidebar ul li:last-child {
+            border-bottom: none;
+        }
+        .sidebar ul li span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* ===== 页脚 ===== */
+        footer {
+            background: var(--surface);
+            border-top: 2px solid var(--border);
+            padding: 24px 0;
+            margin-top: 20px;
+            transition: all var(--transition);
+        }
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .footer-inner small {
+            color: var(--text-secondary);
+        }
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* ===== 随机切换按钮 ===== */
+        .randomize-bar {
+            text-align: center;
+            margin: 20px 0 10px;
+        }
+        .btn-big {
+            padding: 14px 48px;
+            font-size: 1.1rem;
+            border-radius: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0 8px 30px rgba(79, 70, 229, 0.3);
+            transition: all 0.3s;
+        }
+        .btn-big:hover {
+            transform: scale(1.04);
+            box-shadow: 0 12px 40px rgba(79, 70, 229, 0.45);
+        }
+
+        /* ===== 响应式微调 ===== */
+        @media (max-width: 600px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .header-inner {
+                flex-direction: column;
+                align-items: stretch;
                 text-align: center;
             }
-            
-            .hero-text p {
-                margin: 0 auto 30px;
+            nav {
+                justify-content: center;
             }
-            
-            .pricing-card.featured {
-                transform: none;
+            .header-actions {
+                justify-content: center;
             }
-            
-            .pricing-card.featured:hover {
-                transform: translateY(-10px);
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-            }
-            
-            .hero-text h1 {
-                font-size: 36px;
-            }
-            
-            .section-title h2 {
-                font-size: 30px;
-            }
-            
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .hero-buttons button {
-                width: 100%;
-                max-width: 300px;
-            }
-        }
-        
-        @media (max-width: 576px) {
             .hero {
-                padding: 130px 0 80px;
+                padding: 30px 20px;
             }
-            
-            .features, .benefits, .testimonials, .pricing, .cta-section {
-                padding: 70px 0;
-            }
-            
-            .feature-card, .testimonial {
-                padding: 25px;
-            }
-            
-            .plan-price {
-                font-size: 36px;
-            }
+        }
+
+        /* 临时辅助 */
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <!-- Header & Navigation -->
+
+    <!-- ===== 头部 ===== -->
     <header>
-        <div class="container">
-            <nav>
-                <div class="logo">
-                    <div class="logo-icon"><i class="fas fa-bezier-curve"></i></div>
-                    <div class="logo-text">Code<span>Flow</span></div>
-                </div>
-                
-                <ul class="nav-links">
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#benefits">Benefits</a></li>
-                    <li><a href="#testimonials">Testimonials</a></li>
-                    <li><a href="#pricing">Pricing</a></li>
-                    <li><a href="#">Resources</a></li>
-                </ul>
-                
-                <button class="cta-button">Start Free Trial</button>
-                <button class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+        <div class="container header-inner">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span id="siteName">随机站</span>
+            </div>
+            <nav id="mainNav">
+                <a href="#">首页</a>
+                <a href="#">文章</a>
+                <a href="#">关于</a>
+                <a href="#">联系</a>
             </nav>
+            <div class="header-actions">
+                <button class="btn btn-outline" id="themeToggle">🌓 主题</button>
+            </div>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1>Build Apps Faster With <span>Visual Development</span></h1>
-                    <p>CodeFlow empowers teams to create enterprise-grade applications with minimal coding. Drag, drop, and connect components to build powerful web and mobile apps in record time.</p>
-                    <div class="hero-buttons">
-                        <button class="cta-button">Start Building Free</button>
-                        <button class="secondary-button">Watch Demo</button>
-                    </div>
-                </div>
-                <div class="hero-image">
-                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="CodeFlow Platform Interface">
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- ===== 主体 ===== -->
+    <main class="container">
+        <!-- 英雄区 -->
+        <section class="hero" id="heroSection">
+            <div class="random-badge" id="heroBadge">✨ 今日精选</div>
+            <h1>探索 <span id="heroHighlight">无限</span> 可能</h1>
+            <p id="heroDesc">每次刷新都会带来全新的配色、布局与内容，这是一个永不重复的灵感空间。</p>
+            <button class="btn" id="randomizeBtn" style="font-size:1rem; padding:12px 36px;">🎲 随机刷新网站</button>
+        </section>
 
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-title">
-                <h2>Powerful Features for Rapid Development</h2>
-                <p>CodeFlow provides all the tools you need to build, deploy, and scale applications without writing extensive code.</p>
-            </div>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-th-large"></i>
-                    </div>
-                    <h3>Visual Builder</h3>
-                    <p>Drag and drop UI components to design responsive interfaces. Connect data sources with simple point-and-click actions.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-database"></i>
-                    </div>
-                    <h3>Database Integration</h3>
-                    <p>Connect to any data source with built-in connectors. Automatically generate CRUD operations without writing SQL.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h3>Cross-Platform</h3>
-                    <p>Build once, deploy everywhere. Generate applications for web, iOS, and Android from a single visual design.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-code"></i>
-                    </div>
-                    <h3>Extensible with Code</h3>
-                    <p>Add custom functionality with JavaScript when needed. Our platform doesn't limit your creativity or complexity.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Enterprise Security</h3>
-                    <p>Built-in authentication, authorization, and data encryption. SOC2 compliant with enterprise-grade security features.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-rocket"></i>
-                    </div>
-                    <h3>One-Click Deployment</h3>
-                    <p>Deploy to cloud or on-premises with a single click. Automatic scaling and monitoring included.</p>
-                </div>
-            </div>
+        <!-- 卡片网格 -->
+        <div class="grid" id="cardGrid">
+            <!-- 卡片由 JS 动态生成 -->
         </div>
-    </section>
 
-    <!-- Benefits Section -->
-    <section class="benefits" id="benefits">
-        <div class="container">
-            <div class="section-title">
-                <h2>Why Choose CodeFlow?</h2>
-                <p>Join thousands of companies accelerating their digital transformation with low-code development.</p>
-            </div>
-            
-            <div class="benefits-grid">
-                <div class="benefit-item">
-                    <div class="benefit-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3>10x Faster Development</h3>
-                    <p>Build applications in days instead of months with visual development tools.</p>
+        <!-- 两栏：主要文章 + 侧边栏 -->
+        <div class="two-col" id="twoCol">
+            <section id="mainContent">
+                <h2 style="margin-bottom:20px; font-size:1.8rem;">📰 近期更新</h2>
+                <div id="articleList">
+                    <!-- 动态生成文章列表 -->
                 </div>
-                
-                <div class="benefit-item">
-                    <div class="benefit-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <h3>Reduce Costs by 70%</h3>
-                    <p>Lower development and maintenance costs with fewer resources required.</p>
+            </section>
+            <aside class="sidebar" id="sidebar">
+                <h4>📌 热门标签</h4>
+                <div id="tagCloud" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">
+                    <!-- 动态 -->
                 </div>
-                
-                <div class="benefit-item">
-                    <div class="benefit-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3>Citizen Developers</h3>
-                    <p>Enable business users to build solutions with minimal IT assistance.</p>
-                </div>
-                
-                <div class="benefit-item">
-                    <div class="benefit-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Scale Effortlessly</h3>
-                    <p>From prototype to enterprise-scale applications with the same platform.</p>
-                </div>
-            </div>
+                <h4>📋 最新评论</h4>
+                <ul id="commentList">
+                    <!-- 动态 -->
+                </ul>
+            </aside>
         </div>
-    </section>
 
-    <!-- Testimonials -->
-    <section class="testimonials" id="testimonials">
-        <div class="container">
-            <div class="section-title">
-                <h2>Trusted by Industry Leaders</h2>
-                <p>See what our customers have to say about their experience with CodeFlow.</p>
-            </div>
-            
-            <div class="testimonial-slider">
-                <div class="testimonial">
-                    <div class="testimonial-text">
-                        "CodeFlow transformed how we deliver solutions to our business units. What used to take 6 months now takes 3 weeks. Our development team can focus on complex problems while business teams build their own solutions."
-                    </div>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">SC</div>
-                        <div class="author-info">
-                            <h4>Sarah Chen</h4>
-                            <p>CTO, TechGrowth Inc.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="randomize-bar">
+            <button class="btn-big" id="bigRandomBtn">🎲 随机重生</button>
         </div>
-    </section>
+    </main>
 
-    <!-- Pricing Section -->
-    <section class="pricing" id="pricing">
-        <div class="container">
-            <div class="section-title">
-                <h2>Simple, Transparent Pricing</h2>
-                <p>Choose the plan that fits your needs. All plans include core features with no hidden fees.</p>
-            </div>
-            
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <h3 class="plan-name">Starter</h3>
-                    <div class="plan-price">$29<span>/month</span></div>
-                    <ul class="plan-features">
-                        <li>Up to 5 users</li>
-                        <li>10 GB storage</li>
-                        <li>Basic components</li>
-                        <li>Community support</li>
-                        <li>1 production app</li>
-                    </ul>
-                    <button class="secondary-button">Get Started</button>
-                </div>
-                
-                <div class="pricing-card featured">
-                    <div class="featured-badge">Most Popular</div>
-                    <h3 class="plan-name">Professional</h3>
-                    <div class="plan-price">$89<span>/month</span></div>
-                    <ul class="plan-features">
-                        <li>Up to 25 users</li>
-                        <li>100 GB storage</li>
-                        <li>All components</li>
-                        <li>Priority support</li>
-                        <li>10 production apps</li>
-                        <li>Custom branding</li>
-                    </ul>
-                    <button class="cta-button">Try Free for 14 Days</button>
-                </div>
-                
-                <div class="pricing-card">
-                    <h3 class="plan-name">Enterprise</h3>
-                    <div class="plan-price">Custom</div>
-                    <ul class="plan-features">
-                        <li>Unlimited users</li>
-                        <li>Unlimited storage</li>
-                        <li>All features included</li>
-                        <li>24/7 dedicated support</li>
-                        <li>Unlimited apps</li>
-                        <li>On-premises option</li>
-                    </ul>
-                    <button class="secondary-button">Contact Sales</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="container">
-            <h2>Start Building Today</h2>
-            <p>Join over 10,000 companies that use CodeFlow to accelerate their application development. No credit card required for the free trial.</p>
-            <button class="cta-button">Get Started for Free</button>
-        </div>
-    </section>
-
-    <!-- Footer -->
+    <!-- ===== 页脚 ===== -->
     <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <div class="logo">
-                        <div class="logo-icon"><i class="fas fa-bezier-curve"></i></div>
-                        <div class="logo-text">Code<span>Flow</span></div>
-                    </div>
-                    <p style="margin-top: 20px; color: #aaa;">The leading visual development platform for building enterprise applications with minimal coding.</p>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>Product</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Features</a></li>
-                        <li><a href="#">Pricing</a></li>
-                        <li><a href="#">Use Cases</a></li>
-                        <li><a href="#">Integrations</a></li>
-                        <li><a href="#">Roadmap</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>Resources</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">Tutorials</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Community</a></li>
-                        <li><a href="#">Support</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>Company</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="copyright">
-                <p>&copy; 2023 CodeFlow. All rights reserved.</p>
+        <div class="container footer-inner">
+            <small id="footerCopy">© 2026 随机站 · 生成式设计</small>
+            <div class="footer-links">
+                <a href="#">隐私</a>
+                <a href="#">条款</a>
+                <a href="#">RSS</a>
             </div>
         </div>
     </footer>
 
     <script>
-        // Mobile menu toggle
-        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
-            const navLinks = document.querySelector('.nav-links');
-            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
-            
-            // Adjust for mobile
-            if (window.innerWidth <= 768) {
-                if (navLinks.style.display === 'flex') {
-                    navLinks.style.flexDirection = 'column';
-                    navLinks.style.position = 'absolute';
-                    navLinks.style.top = '80px';
-                    navLinks.style.left = '0';
-                    navLinks.style.width = '100%';
-                    navLinks.style.backgroundColor = 'white';
-                    navLinks.style.padding = '20px';
-                    navLinks.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
-                    
-                    const navItems = document.querySelectorAll('.nav-links li');
-                    navItems.forEach(item => {
-                        item.style.margin = '10px 0';
-                    });
-                }
-            }
-        });
-        
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                if(targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if(targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                    
-                    // Close mobile menu if open
-                    if(window.innerWidth <= 768) {
-                        document.querySelector('.nav-links').style.display = 'none';
-                    }
-                }
-            });
-        });
-        
-        // Simple testimonial slider
-        const testimonials = [
-            {
-                text: "CodeFlow transformed how we deliver solutions to our business units. What used to take 6 months now takes 3 weeks. Our development team can focus on complex problems while business teams build their own solutions.",
-                name: "Sarah Chen",
-                position: "CTO, TechGrowth Inc.",
-                initials: "SC"
-            },
-            {
-                text: "We reduced our app development time by 80% using CodeFlow. The visual interface made it easy for our analysts to build data dashboards without waiting for IT resources.",
-                name: "Marcus Johnson",
-                position: "Director of Operations, DataCorp",
-                initials: "MJ"
-            },
-            {
-                text: "As a non-technical founder, CodeFlow allowed me to build our MVP in just 2 months. I could test ideas quickly and iterate based on user feedback without deep coding knowledge.",
-                name: "Lisa Wang",
-                position: "Founder, StartupLabs",
-                initials: "LW"
-            }
+        // ================================================================
+        //  1. 随机工具
+        // ================================================================
+        const rand = (min, max) => Math.random() * (max - min) + min;
+        const randInt = (min, max) => Math.floor(rand(min, max + 1));
+        const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+        // ================================================================
+        //  2. 数据池（随机内容）
+        // ================================================================
+        const SITE_NAMES = ['灵感岛', '随机站', '幻境', '明日实验室', '无界', '像素花园', '云间', '极光'];
+        const HERO_HIGHLIGHTS = ['无限', '创意', '未来', '设计', '科技', '艺术', '探索', '奇迹'];
+        const HERO_DESCS = [
+            '每次刷新都会带来全新的配色、布局与内容，这是一个永不重复的灵感空间。',
+            '让随机性成为创意的引擎，每时每刻都是新鲜的设计体验。',
+            '突破常规，拥抱变化 —— 你的下一个灵感就在一次点击之间。',
+            '动态生成的艺术与内容，让网站本身成为一件活着的作品。'
         ];
-        
-        let currentTestimonial = 0;
-        const testimonialElement = document.querySelector('.testimonial');
-        
-        function rotateTestimonial() {
-            currentTestimonial = (currentTestimonial + 1) % testimonials.length;
-            updateTestimonial();
+        const BADGES = ['✨ 今日精选', '🔥 热门推荐', '💡 灵感闪现', '🎯 随机碰撞', '🌟 特别企划'];
+
+        // 文章标题、摘要、标签
+        const TITLES = [
+            '设计系统重构之路', 'AI 时代的创意工具', '极简主义与留白艺术',
+            '响应式布局的终极方案', '色彩心理学在UI中的应用', '未来交互趋势前瞻',
+            '从零构建组件库', '无障碍设计实践', '动效与叙事设计',
+            '设计思维工作坊', '数据可视化之美', '字体排印新浪潮'
+        ];
+        const SUMMARIES = [
+            '探索如何用系统化的思维构建可持续的设计体系，让团队协作更高效。',
+            '机器学习正在改变创作方式，我们如何与AI协同工作而非被取代？',
+            '少即是多，留白不是空白，而是呼吸的空间。',
+            '从移动优先到容器查询，新一代响应式技术全面解析。',
+            '色彩不仅是视觉元素，更是情感与品牌的载体。',
+            '语音、手势、脑机接口——未来交互的边界在哪里？',
+            '如何打造一套灵活、可扩展的UI组件库，提升研发效率。',
+            '让每个人都能平等地访问信息，设计的社会责任。',
+            '动效不仅仅是点缀，它能引导注意力、传递状态。',
+            '设计思维不仅用于产品，更是一种解决问题的方法论。',
+            '将复杂数据转化为直观故事，让信息更具说服力。',
+            '字体是设计的骨架，好的排版能赋予内容灵魂。'
+        ];
+        const TAGS = ['设计', '前端', 'AI', 'UX', '色彩', '排版', '响应式', '组件', '创意', '未来'];
+        const COMMENT_NAMES = ['李明', '王芳', '张伟', '刘洋', '陈静', '赵磊', '周婷', '吴刚'];
+
+        // 随机生成颜色（亮色）
+        function randomColor() {
+            const hue = randInt(0, 360);
+            const sat = randInt(60, 90);
+            const lig = randInt(45, 70);
+            return `hsl(${hue}, ${sat}%, ${lig}%)`;
         }
-        
-        function updateTestimonial() {
-            const testimonial = testimonials[currentTestimonial];
-            testimonialElement.innerHTML = `
-                <div class="testimonial-text">"${testimonial.text}"</div>
-                <div class="testimonial-author">
-                    <div class="author-avatar">${testimonial.initials}</div>
-                    <div class="author-info">
-                        <h4>${testimonial.name}</h4>
-                        <p>${testimonial.position}</p>
+
+        function randomDarkColor() {
+            const hue = randInt(0, 360);
+            const sat = randInt(50, 80);
+            const lig = randInt(15, 30);
+            return `hsl(${hue}, ${sat}%, ${lig}%)`;
+        }
+
+        function randomLightColor() {
+            const hue = randInt(0, 360);
+            const sat = randInt(40, 70);
+            const lig = randInt(85, 95);
+            return `hsl(${hue}, ${sat}%, ${lig}%)`;
+        }
+
+        // ================================================================
+        //  3. 主题随机化 (CSS变量)
+        // ================================================================
+        function randomTheme() {
+            const primary = randomColor();
+            const primaryLight = randomLightColor();
+            const primaryDark = randomDarkColor();
+            const bg = randomLightColor();
+            const surface = '#ffffff';
+            const text = randomDarkColor();
+            const textSecondary = `hsl(${randInt(0,360)}, ${randInt(30,60)}%, ${randInt(40,55)}%)`;
+            const border = `hsl(${randInt(0,360)}, ${randInt(20,40)}%, ${randInt(80,92)}%)`;
+
+            const root = document.documentElement.style;
+            root.setProperty('--primary', primary);
+            root.setProperty('--primary-light', primaryLight);
+            root.setProperty('--primary-dark', primaryDark);
+            root.setProperty('--bg', bg);
+            root.setProperty('--surface', surface);
+            root.setProperty('--text', text);
+            root.setProperty('--text-secondary', textSecondary);
+            root.setProperty('--border', border);
+        }
+
+        // ================================================================
+        //  4. 内容随机化
+        // ================================================================
+        function randomContent() {
+            // 站点名称
+            document.getElementById('siteName').textContent = pick(SITE_NAMES);
+
+            // 英雄区
+            document.getElementById('heroHighlight').textContent = pick(HERO_HIGHLIGHTS);
+            document.getElementById('heroDesc').textContent = pick(HERO_DESCS);
+            document.getElementById('heroBadge').textContent = pick(BADGES);
+
+            // 页脚
+            document.getElementById('footerCopy').textContent =
+                `© ${new Date().getFullYear()} ${document.getElementById('siteName').textContent} · 生成式设计`;
+
+            // ---- 卡片 ----
+            const grid = document.getElementById('cardGrid');
+            grid.innerHTML = '';
+            const cardCount = randInt(3, 6);
+            const shuffledTitles = [...TITLES].sort(() => Math.random() - 0.5);
+            const shuffledSummaries = [...SUMMARIES].sort(() => Math.random() - 0.5);
+            for (let i = 0; i < cardCount; i++) {
+                const title = shuffledTitles[i % shuffledTitles.length];
+                const summary = shuffledSummaries[i % shuffledSummaries.length];
+                const tag = pick(TAGS);
+                const color1 = randomColor();
+                const color2 = randomColor();
+                const svg = `
+                    <svg viewBox="0 0 400 225" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="225" fill="${color1}" />
+                        <circle cx="200" cy="112" r="60" fill="${color2}" opacity="0.6" />
+                        <text x="200" y="120" font-family="sans-serif" font-size="40" fill="white" text-anchor="middle" dominant-baseline="central">${i+1}</text>
+                    </svg>
+                `;
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-img">${svg}</div>
+                    <h3><a href="#">${title}</a></h3>
+                    <p>${summary}</p>
+                    <div class="meta">
+                        <span>📅 ${randInt(1,28)} 天前</span>
+                        <span class="tag">${tag}</span>
                     </div>
-                </div>
-            `;
+                `;
+                grid.appendChild(card);
+            }
+
+            // ---- 文章列表（两栏左侧） ----
+            const articleList = document.getElementById('articleList');
+            articleList.innerHTML = '';
+            const articleCount = randInt(3, 5);
+            for (let i = 0; i < articleCount; i++) {
+                const title = pick(TITLES);
+                const date = `${randInt(1,12)}月${randInt(1,28)}日`;
+                const div = document.createElement('div');
+                div.style.cssText = `
+                    padding: 14px 0;
+                    border-bottom: 1px solid var(--border);
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    transition: all 0.2s;
+                `;
+                div.innerHTML = `
+                    <a href="#" style="text-decoration:none; color:var(--text); font-weight:500;">${title}</a>
+                    <span style="color:var(--text-secondary); font-size:0.85rem;">${date}</span>
+                `;
+                articleList.appendChild(div);
+            }
+
+            // ---- 侧边栏标签 ----
+            const tagCloud = document.getElementById('tagCloud');
+            tagCloud.innerHTML = '';
+            const tagCount = randInt(5, 9);
+            const shuffledTags = [...TAGS].sort(() => Math.random() - 0.5);
+            for (let i = 0; i < tagCount; i++) {
+                const tag = shuffledTags[i % shuffledTags.length];
+                const span = document.createElement('span');
+                span.style.cssText = `
+                    background: var(--primary);
+                    color: #fff;
+                    padding: 4px 14px;
+                    border-radius: 40px;
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    display: inline-block;
+                `;
+                span.textContent = tag;
+                tagCloud.appendChild(span);
+            }
+
+            // ---- 侧边栏评论 ----
+            const commentList = document.getElementById('commentList');
+            commentList.innerHTML = '';
+            const commentCount = randInt(3, 6);
+            for (let i = 0; i < commentCount; i++) {
+                const name = pick(COMMENT_NAMES);
+                const text = pick(['太棒了！', '很有启发', '学习了', '感谢分享', '收藏了', '期待更多']);
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${name}</span> “${text}”`;
+                commentList.appendChild(li);
+            }
         }
-        
-        // Auto-rotate testimonials every 5 seconds
-        setInterval(rotateTestimonial, 5000);
-        
-        // CTA button interactions
-        document.querySelectorAll('.cta-button').forEach(button => {
-            button.addEventListener('click', function() {
-                alert('Thank you for your interest in CodeFlow! You would be redirected to the signup page in a real implementation.');
+
+        // ================================================================
+        //  5. 完全随机刷新
+        // ================================================================
+        function fullRandomize() {
+            randomTheme();
+            randomContent();
+            // 重新应用一些动态样式（按钮颜色等）
+            document.querySelectorAll('.btn, .btn-big, .btn-outline').forEach(el => {
+                el.style.setProperty('--primary', getComputedStyle(document.documentElement).getPropertyValue('--primary').trim());
             });
+        }
+
+        // ================================================================
+        //  6. 暗色/亮色切换（额外功能）
+        // ================================================================
+        let darkMode = false;
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            darkMode = !darkMode;
+            const root = document.documentElement.style;
+            if (darkMode) {
+                root.setProperty('--bg', '#0f172a');
+                root.setProperty('--surface', '#1e293b');
+                root.setProperty('--text', '#f1f5f9');
+                root.setProperty('--text-secondary', '#94a3b8');
+                root.setProperty('--border', '#334155');
+                document.getElementById('themeToggle').textContent = '☀️ 亮色';
+            } else {
+                // 恢复随机主题（但不重新生成内容）
+                randomTheme();
+                document.getElementById('themeToggle').textContent = '🌓 主题';
+            }
         });
-        
-        // Pricing card interactions
-        document.querySelectorAll('.pricing-card button').forEach(button => {
-            button.addEventListener('click', function() {
-                const planName = this.closest('.pricing-card').querySelector('.plan-name').textContent;
-                alert(`You selected the ${planName} plan. In a real implementation, you would be redirected to the checkout process.`);
-            });
-        });
+
+        // ================================================================
+        //  7. 绑定事件 & 启动
+        // ================================================================
+        document.getElementById('randomizeBtn').addEventListener('click', fullRandomize);
+        document.getElementById('bigRandomBtn').addEventListener('click', fullRandomize);
+
+        // 初始加载随机
+        fullRandomize();
+
+        console.log('✨ 随机网站已启动！每次点击“随机刷新”都会获得全新体验。');
     </script>
 </body>
 </html>
