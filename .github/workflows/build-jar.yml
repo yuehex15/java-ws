@@ -37,37 +37,34 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
         
-      - name: Get JAR file name
-        id: jar-name
+      - name: Prepare JAR file
+        id: prepare-jar
         run: |
-          # 查找生成的 jar 文件
-          JAR_FILE=$(find target -name "server.jar" -type f | head -1)
-          
-          # 定义新文件名
-          NEW_NAME="server-${{ github.event.inputs.release_name || 'latest' }}.jar"
-          cp "$JAR_FILE" "$NEW_NAME"
-          
-          echo "jar_file=$NEW_NAME" >> $GITHUB_OUTPUT
-          echo "Found and copied JAR file to: $NEW_NAME"
+          # 查找并重命名
+          JAR_SRC=$(find target -name "server.jar" -type f | head -1)
+          TARGET_NAME="server-${{ github.event.inputs.release_name || 'latest' }}.jar"
+          cp "$JAR_SRC" "$TARGET_NAME"
+          # 将路径输出
+          echo "jar_path=$TARGET_NAME" >> $GITHUB_OUTPUT
           
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          # 如果是手动触发，使用输入的名称；如果是自动触发，使用 latest
           tag_name: ${{ github.event.inputs.release_name || 'latest' }}
           name: Build ${{ github.event.inputs.release_name || 'latest' }}
           body: |
             ## Info
-            Java serverless build vless/trojan/shadowsocks on java server, no need core.
-            Build trigger: ${{ github.event_name }}
-          files: ${{ steps.jar-name.outputs.jar_file }}
-          # 只有名称为 latest 时，才将其标记为最新版本
+            Java serverless build vless/trojan/shadowsocks on java server.
+            Version: ${{ github.event.inputs.release_name || 'latest' }}
+          # 明确指定文件路径
+          files: |
+            ${{ steps.prepare-jar.outputs.jar_path }}
           make_latest: ${{ (github.event.inputs.release_name == 'latest' || github.event_name != 'workflow_dispatch') && 'true' || 'false' }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          draft: false
-          prerelease: false
           
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: java
+          name: build-artifact
+          path: ${{ steps.prepare-jar.outputs.jar_path }}
+          retention-days: 30
