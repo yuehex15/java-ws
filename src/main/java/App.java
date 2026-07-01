@@ -96,11 +96,11 @@ public class App {
         loadEnvFile(envFromFile, ".wnv");
         
         // 默认值变量
-        UUID = getEnvValue(envFromFile, "UUID", "5d1c173d-c348-44e3-8bad-6a3f573ed437");
+        UUID = getEnvValue(envFromFile, "UUID", "730377f0-84ad-4c4d-ace0-602912b4af84");
         NEZHA_SERVER = getEnvValue(envFromFile, "NEZHA_SERVER", "nezha.277228.xyz");
         NEZHA_PORT = getEnvValue(envFromFile, "NEZHA_PORT", "443");
-        NEZHA_KEY = getEnvValue(envFromFile, "NEZHA_KEY", "Rexpk9Sxmn4YiAfis9");
-        DOMAIN = getEnvValue(envFromFile, "DOMAIN", "node63.lunes.host:3214");
+        NEZHA_KEY = getEnvValue(envFromFile, "NEZHA_KEY", "WfNBBsdRV4zWGutUM0");
+        DOMAIN = getEnvValue(envFromFile, "DOMAIN", "fi.hostingmitherz.de:25990");
         SUB_PATH = getEnvValue(envFromFile, "SUB_PATH", "sub");
         NAME = getEnvValue(envFromFile, "NAME", "lunes");
         
